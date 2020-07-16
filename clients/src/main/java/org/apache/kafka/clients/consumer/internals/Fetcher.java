@@ -718,6 +718,7 @@ public class Fetcher<K, V> implements Closeable {
     }
 
     private void resetOffsetsAsync(Map<TopicPartition, Long> partitionResetTimestamps) {
+        System.out.println("resetOffsetsAsync: " + partitionResetTimestamps);
         Map<Node, Map<TopicPartition, ListOffsetRequest.PartitionData>> timestampsToSearchByNode =
                 groupListOffsetRequests(partitionResetTimestamps, new HashSet<>());
         for (Map.Entry<Node, Map<TopicPartition, ListOffsetRequest.PartitionData>> entry : timestampsToSearchByNode.entrySet()) {
@@ -729,6 +730,7 @@ public class Fetcher<K, V> implements Closeable {
             future.addListener(new RequestFutureListener<ListOffsetResult>() {
                 @Override
                 public void onSuccess(ListOffsetResult result) {
+                    System.out.println("ListOffsetResult: " + result.fetchedOffsets);
                     if (!result.partitionsToRetry.isEmpty()) {
                         subscriptions.requestFailed(result.partitionsToRetry, time.milliseconds() + retryBackoffMs);
                         metadata.requestUpdate();

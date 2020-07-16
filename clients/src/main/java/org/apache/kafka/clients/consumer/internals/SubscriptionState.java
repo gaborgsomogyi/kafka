@@ -380,8 +380,25 @@ public class SubscriptionState {
         } else if (requestedResetStrategy != state.resetStrategy) {
             log.debug("Skipping reset of partition {} since an alternative reset has been requested", tp);
         } else {
+            System.out.println("Moving " + tp + " to: " + offset);
+            if (tp.partition() == 1) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (offset > 0) {
+                    // Make sure `position` returns before we change the offset to 10.
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
             log.info("Resetting offset for partition {} to offset {}.", tp, offset);
             state.seekUnvalidated(new FetchPosition(offset));
+            System.out.println("Moved " + tp + " to: " + offset);
         }
     }
 
